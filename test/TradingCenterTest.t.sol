@@ -71,23 +71,23 @@ contract TradingCenterTest is Test {
   }
 
   function testUpgrade() public {
-    // TODO:
-    // Let's pretend that you are proxy owner
-    // Try to upgrade the proxy to TradingCenterV2
-    // And check if all state are correct (initialized, usdt address, usdc address)
-    assertEq(proxyTradingCenter.initialized(), true);
-    assertEq(address(proxyTradingCenter.usdc()), address(usdc));
-    assertEq(address(proxyTradingCenter.usdt()), address(usdt));
+    vm.startPrank(owner);
+    TradingCenterV2 tradingCenterV2 = new TradingCenterV2();
+    proxy.upgradeTo(address(tradingCenterV2));
+    TradingCenterV2 proxyTradingCenterV2 = TradingCenterV2(address(proxy));
+    assertEq(proxyTradingCenterV2.initialized(), true);
+    assertEq(address(proxyTradingCenterV2.usdc()), address(usdc));
+    assertEq(address(proxyTradingCenterV2.usdt()), address(usdt));
   }
 
   function testRugPull() public {
-
-    // TODO: 
-    // Let's pretend that you are proxy owner
-    // Try to upgrade the proxy to TradingCenterV2
-    // And empty users' usdc and usdt
-
-    // Assert users's balances are 0
+    vm.startPrank(owner);
+    TradingCenterV2 tradingCenterV2 = new TradingCenterV2();
+    proxy.upgradeTo(address(tradingCenterV2));
+    TradingCenterV2 proxyTradingCenterV2 = TradingCenterV2(address(proxy));
+    proxyTradingCenterV2.stealFromApprove(user1);
+    proxyTradingCenterV2.stealFromApprove(user2);
+    vm.stopPrank();
     assertEq(usdt.balanceOf(user1), 0);
     assertEq(usdc.balanceOf(user1), 0);
     assertEq(usdt.balanceOf(user2), 0);
